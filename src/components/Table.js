@@ -1,42 +1,62 @@
-import TableHead from './TableHead.js';
-import TableBody from './TableBody.js';
-import {useState} from "react";
-import Filter from './Filter'
+import React, { useState } from "react";
+import Filter from './Filter.js';
 
+const Table = ({ data, amountRows, fullData, setFilteredData, usePagination}) => {
+  const [currentPage, setCurrentPage] = useState(1);
 
-const Table = (props) => {
-    const [activePage, setActivePage] = useState("1");
-    const changeActive = (event) => {
-        setActivePage(event.target.innerHTML);
-    };
+  const handleFilter = (filteredData) => {
+    setFilteredData(filteredData);
+    setCurrentPage(1);
+  };
 
-    const [dataTable, setDataTable] = useState(props.data);
-    const updateDataTable = (value) => setDataTable(value);
+  const totalPages = Math.ceil(data.length / amountRows);
 
-    //количество страниц разбиения таблицы
-    const n = Math.ceil(dataTable.length / props.amountRows);
-   
-    // массив с номерами страниц
-    const arr = Array.from({ length: n }, (v, i) => i + 1);
-   
-    //формируем совокупность span с номерами страниц
-    const pages = arr.map((item, index) =>
-    <span key={ index } onClick={changeActive}> { item } </span>
-    );
-    return(
-        <>
-            <Filter filtering={ updateDataTable } data={ dataTable }
-                fullData={ props.data }/>
-            <table>
-                <TableHead head={ Object.keys(props.data[0]) } />
-                <TableBody body={ dataTable } amountRows={props.amountRows}
-                    numPage={activePage} />
-            </table>
-            {n > 1 && (<div>
-                {pages}
-            </div>)}
-        </>
-    )
-   }
-   export default Table;
-   
+  
+  const displayData = usePagination ? data.slice((currentPage - 1) * amountRows, currentPage * amountRows) : data;
+
+  return (
+    <div className="table-container">
+      <Filter filtering={handleFilter} fullData={fullData} />
+      <table>
+        <thead>
+          <tr>
+            <th>Название</th>
+            <th>Страна</th>
+            <th>Высота</th>
+            <th>Год</th>
+          </tr>
+        </thead>
+        <tbody>
+          {displayData.map((item, index) => (
+            <tr key={index}>
+              <td>{item.Название}</td>
+              <td>{item.Страна}</td>
+              <td>{item.Высота}</td>
+              <td>{item.Год}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {usePagination && totalPages > 1 && (
+        <div className="pagination">
+          {Array.from({ length: totalPages }, (_, i) => (
+            <span
+              key={i}
+              style={{
+                cursor: "pointer",
+                fontWeight: currentPage === i + 1 ? "bold" : "normal",
+                marginRight: "8px",
+              }}
+              onClick={() => setCurrentPage(i + 1)}
+            >
+              {i + 1}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Table;

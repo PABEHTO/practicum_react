@@ -1,28 +1,28 @@
+// App.js
 import './CSS/App.css';
 import buildings from './data.js';
+import { useState } from 'react';
 import Table from './components/Table.js';
-import Task from './components/Task.js';
+import Chart from './components/Chart.js';
 
 function App() {
+  const [fullData] = useState(buildings);
+  const [filteredData, setFilteredData] = useState(buildings);
+
   return (
-    <> 
-      <h3>Самые высокие здания и сооружения</h3>
-      <Table data={buildings} amountRows="10"/>
+    <>
+      <h3>Самые высокые здания и сооружения</h3>
+      <Chart data={filteredData} />
+      <Table 
+        data={filteredData} 
+        fullData={fullData}
+        setFilteredData={setFilteredData}
+        amountRows="10"
+        usePagination={false}
+/>
+      
     </>
   );
 }
-
-/*function App() {
-  const authorsData = [
-    { author: "Пушкин", books: ["1", "2", "3"] },
-    { author: "Достоевский", books: ["4", "5"] },
-    { author: "Булгаков", books: ["6", "7", "8", "9"] }
-    ];
-  return (
-    <> 
-      <Task data={authorsData}/>
-    </>
-  );
-}*/
 
 export default App;
